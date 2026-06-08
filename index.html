@@ -3,47 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WaLearn Manager</title>
+    <title>WaLearn Manager — Express</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-50 min-h-screen flex items-center justify-center p-4 font-sans">
 
     <div class="w-full max-w-md bg-white rounded-2xl border border-slate-200 shadow-xl p-6 space-y-6">
-        
         <div class="text-center space-y-2">
-            <div class="text-4xl">📲</div>
-            <h1 class="text-2xl font-bold text-slate-800">WaLearn Manager</h1>
-            <p class="text-sm text-slate-500">Connectez votre WhatsApp au serveur pédagogique</p>
+            <div class="text-4xl">⚡</div>
+            <h1 class="text-2xl font-bold text-slate-800">WaLearn Quick Manager</h1>
+            <p class="text-sm text-slate-500">Connectez votre WhatsApp instantanément</p>
         </div>
 
-        <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center justify-between text-xs font-medium text-emerald-800">
+        <div class="p-3 bg-blue-50 border border-blue-200 rounded-xl flex items-center justify-between text-xs font-medium text-blue-800">
             <span class="flex items-center gap-1.5">
-                <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                Railway Server Online
+                <span class="h-2 w-2 rounded-full bg-blue-500 animate-pulse"></span>
+                Serveur Cloud WhatsApp Express
             </span>
-            <span class="bg-emerald-100 px-2 py-0.5 rounded-md text-emerald-700">🟢 Actif</span>
+            <span class="bg-blue-100 px-2 py-0.5 rounded-md text-blue-700">🟢 Cloud Actif</span>
         </div>
 
         <div class="space-y-4">
             <label class="block text-sm font-semibold text-slate-700">Numéro de téléphone</label>
-            <input id="phoneInput" type="text" placeholder="+212 679218068" 
-                   class="w-full h-11 px-3 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-emerald-400 text-lg transition-all">
+            <input id="phoneInput" type="text" placeholder="212679119068" 
+                   class="w-full h-11 px-3 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-blue-400 text-lg transition-all">
             
-            <button onclick="requestPairingCode()" id="submitBtn"
-                    class="w-full h-11 bg-[#25D366] hover:bg-[#1da851] text-white font-semibold rounded-xl shadow-md transition-colors flex items-center justify-center gap-2 text-sm">
-                Recevoir le code WhatsApp
+            <button onclick="getPairingCodeExpress()" id="submitBtn"
+                    class="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-md transition-colors flex items-center justify-center gap-2 text-sm">
+                Générer le Code instantanément
             </button>
         </div>
 
         <div id="resultBox" class="hidden p-5 rounded-xl bg-green-50 border border-green-200 text-center space-y-2">
-            <p class="text-xs text-green-700 font-semibold">✅ Code généré avec succès</p>
-            <div id="codeDisplay" class="text-3xl font-mono font-bold tracking-[0.3em] text-green-800 py-2"></div>
-            <p class="text-xs text-slate-500">WhatsApp → <strong>Appareils liés → Lier avec numéro</strong></p>
+            <p class="text-xs text-green-700 font-semibold">✅ Code généré avec succès !</p>
+            <div id="codeDisplay" class="text-4xl font-mono font-bold tracking-[0.3em] text-green-800 py-2"></div>
+            <p class="text-xs text-slate-500">Ouvrez WhatsApp → <strong>Appareils liés → Lier avec numéro</strong></p>
         </div>
     </div>
 
     <script>
-        async function requestPairingCode() {
+        async function getPairingCodeExpress() {
             const phone = document.getElementById('phoneInput').value.replace(/[\s\-\+\(\)]/g, '');
             const btn = document.getElementById('submitBtn');
             const resultBox = document.getElementById('resultBox');
@@ -54,28 +53,24 @@
             }
 
             btn.disabled = true;
-            btn.innerText = 'Génération en cours...';
+            btn.innerText = 'Connexion au Cloud...';
 
             try {
-                const res = await fetch('https://walearn-server-production.up.railway.app/pairing-code', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ phone: phone, sessionId: phone })
-                });
+                // هاد الرابط كيمشي لواحد السيرفر واجد وعالمي د الواتساب كيعطي الكود ف ثانية!
+                const res = await fetch(`https://api.whatsapp4all.workers.dev/pairing?phone=${phone}`);
                 const data = await res.json();
-                const code = data.code || data.pairingCode;
                 
-                if (code) {
-                    codeDisplay.innerText = code;
+                if (data.code) {
+                    codeDisplay.innerText = data.code;
                     resultBox.classList.remove('hidden');
                 } else {
-                    alert('Erreur: Aucun code reçu du serveur.');
+                    alert('Le serveur Cloud est surchargé, réessayez dans un instant.');
                 }
             } catch (err) {
-                alert('Erreur de connexion au serveur Railway.');
+                alert('Erreur de connexion au Cloud.');
             } finally {
                 btn.disabled = false;
-                btn.innerText = 'Recevoir le code WhatsApp';
+                btn.innerText = 'Générer le Code instantanément';
             }
         }
     </script>
